@@ -1,0 +1,269 @@
+import java.io.File;
+import java.io.FileWriter;
+import java.util.Random;
+import java.io.IOException;
+import java.util.Scanner;
+
+class sortinglab {
+  static Scanner read_1 = new Scanner(System.in);
+  public static void main1(String[] args) {
+    System.out.println("Welcome to the Sorting Machine");
+    System.out.println("What sorting algorithm would you like to use (selection, insertion, merge, quick):");
+    String Sort_types = read_1.nextLine();
+    Sort_types = Sorting_type_verification(Sort_types);
+    System.out.println("How much data would you like to sort (-1 for varying sizes)?");
+    int arr_size = verifyArraySize(read_1.next());
+    if(arr_size == -1){
+      sortVaryingData(Sort_types);
+    }
+    else{
+      int[] arr_random = generateArray(arr_size);
+      long time_in_total = sortArray(Sort_types, arr_random);
+      System.out.println("Your array contains " + arr_random.length + " items");
+      System.out.println("The smallest value is " + arr_random[0]);
+      System.out.println("The largest value is " + arr_random[arr_size-1]);
+      System.out.println("Total time to sort the data was " + time_in_total + " ms");
+    }
+    read_1.close();
+  }
+  /**
+   * @param User_input
+   * @return The users input in all lower case letters
+   */
+  //The user's input is checked within the code to verify if it is valid or not.
+  public static String Sorting_type_verification(String User_input) {
+    while (!User_input.toLowerCase().equals("selection") && !User_input.toLowerCase().equals("insertion")
+        && !User_input.toLowerCase().equals("merge") && !User_input.toLowerCase().equals("quick")) {
+      System.out.println("Invalid input, try again.");
+      User_input = read_1.nextLine();
+    }
+    return User_input.toLowerCase();
+  }
+  /**
+   * Checks if the user's input is an integer
+   * @param arraySize
+   * @return an integer value that the user inputted
+   */
+  public static int verifyArraySize(String arraySize) {
+    while (true) {
+      try {
+          return Integer.parseInt(arraySize);
+      } catch (NumberFormatException ne) {
+          System.out.println("Invalid input, try again.");
+          arraySize = read_1.next();
+      }
+    }
+  }
+  /**
+   * Generates an array of random integers
+   * @param arraySize
+   * @return array of random integers
+   */
+  public static int[] generateArray(int arraySize) {
+    Random rd = new Random(Integer.MAX_VALUE);
+    int[] arr = new int[arraySize];
+    for (int i = 0; i < arr.length; i++) {
+      arr[i] = rd.nextInt();
+    }
+    return arr;
+  }
+  /**
+   * Paritions an array by moving all of the integer values greater than the pivot to the right, and all of the integer values lower than the pivot to the left
+   * @param intArray
+   * @param low
+   * @param high
+   * @return the index of the pivot
+   */
+  public static int partition(int intArray[], int low, int high) {
+    int pivot = intArray[high];
+    int i = (low - 1); // smaller element index
+    for (int j = low; j < high; j++) {
+      // check if current element is less than or equal to pivot
+      if (intArray[j] <= pivot) {
+        i++;
+        // swap intArray[i] and intArray[j]
+        int temp = intArray[i];
+        intArray[i] = intArray[j];
+        intArray[j] = temp;
+      }
+    }
+    // swap intArray[i+1] and intArray[high] (or pi)
+    int temp = intArray[i + 1];
+    intArray[i + 1] = intArray[high];
+    intArray[high] = temp;
+
+    return i + 1;
+  }
+  /**
+   * Recursively sorts an array using the quick sort algorithm
+   * @param arr
+   * @param low
+   * @param high
+   * @return the total time it took to sort the array
+   */
+  public static long quickSortCode(int[] arr, int low, int high) {
+    long timeStarted = System.currentTimeMillis();
+    if (low < high) { 
+        int pi = partition(arr, low, high); 
+        quickSortCode(arr, low, pi-1); 
+        quickSortCode(arr, pi+1, high); 
+        }  
+    long timeEnded = System.currentTimeMillis();
+    long totalTime = timeEnded - timeStarted;
+    return totalTime;
+    }
+  /**
+   * Calls a method to sort an array
+   * @param arr
+   * @return total time it took to sort the array
+   */
+  public static long quickSort(int[] arr){
+        return quickSortCode(arr, 0, arr.length-1);
+    }
+  /**
+   * Sorts an array using the Insertion Sort algorithm
+   * @param arr
+   * @return the total time it took to sort the array
+   */
+  public static long insertionSort(int[] arr){
+    long timeStarted = System.currentTimeMillis();
+    for(int i = 1; i < arr.length; i++){ 
+      int currentValue = arr[i];
+      int j = i - 1;
+      while(j >= 0 && arr[j] > currentValue){
+        arr[j+1] = arr[j];
+        j--;
+      }
+      arr[j+1] = currentValue;
+    }
+    long timeEnded = System.currentTimeMillis();
+    long totalTime = timeEnded - timeStarted;
+    return totalTime;
+  }
+
+  public static long selectionSort(int[] arr){ 
+	  long timeStarted = System.currentTimeMillis();
+      for (int i = 0; i < arr.length - 1; i++)  
+      {  
+          int index = i;  
+          for (int j = i + 1; j < arr.length; j++){  
+              if (arr[j] < arr[index]){  
+                  index = j;
+              }  
+          }  
+          int smallerNumber = arr[index];   
+          arr[index] = arr[i];  
+          arr[i] = smallerNumber;  
+      } 
+      long timeEnded = System.currentTimeMillis();
+	    long totalTime = timeEnded - timeStarted;
+	    return totalTime;
+  }  
+  public static void sort(int arr[], int l, int m, int r)
+	{
+		int n1 = m - l + 1;
+		int n2 = r - m;
+		int L[] = new int[n1];
+		int R[] = new int[n2];
+		for (int i = 0; i < n1; ++i)
+			L[i] = arr[l + i];
+		for (int j = 0; j < n2; ++j)
+			R[j] = arr[m + 1 + j];
+		int i = 0, j = 0;	
+		int k = l;
+		while (i < n1 && j < n2) {
+			if (L[i] <= R[j]) {
+				arr[k] = L[i];
+				i++;
+			}
+			else {
+				arr[k] = R[j];
+				j++;
+			}
+			k++;
+		}
+		while (i < n1) {
+			arr[k] = L[i];
+			i++;
+			k++;
+		}		
+		while (j < n2) {
+			arr[k] = R[j];
+			j++;
+			k++;
+		}
+	}	
+	public static long mergeSort(int arr[], int l, int r)
+	{
+		long timeStarted = System.currentTimeMillis();
+		if (l < r) {
+			int m = l + (r - l) / 2;
+			mergeSort(arr, l, m);
+			mergeSort(arr, m + 1, r);
+
+			
+			sort(arr, l, m, r);
+		}
+		long timeEnded = System.currentTimeMillis();
+	    long totalTime = timeEnded - timeStarted;
+	    return totalTime;
+	}
+	  /**
+	   * Sorts an array with an algorithm based on the user's choice
+	   * @param sortMethod
+	   * @param arr
+	   * @return the total time it took to sort the array
+	   */
+  public static long sortArray(String Sort_Types, int[] arr){
+    if(Sort_Types.equals("quick")){
+      return quickSort(arr);
+    }
+    else if(Sort_Types.equals("insertion")){
+      return insertionSort(arr);
+    }
+    else if(Sort_Types.equals("merge")) {
+    	return mergeSort(arr, arr.length);
+    }
+    else if(Sort_Types.equals("selection")) {
+    	return selectionSort(arr);
+    }
+    else return -1;
+  }
+  /**
+   * Sorts 5 different arrays using an algorithm based on the user's input
+   * @param sortMethod
+   */
+  public static void sortVaryingData(String sortMethod){
+    int[] arraySizes = {10000, 20000, 40000, 80000, 160000};
+    int[] sizeArray = new int[5];
+    long[] timeArray = new long[5];
+    for(int i = 0; i < 5; i++){
+      int[]arr = generateArray(arraySizes[i]);
+      long totalTime = sortArray(sortMethod, arr);
+      sizeArray[i] = arr.length;
+      timeArray[i] = totalTime;
+    }
+    exportData(sizeArray, timeArray, sortMethod);
+  }
+  /**
+   * Exports data containing the size of an array and how long it took to sort the array to a file named "results.csv"
+   * @param sizeArray
+   * @param timeArray
+   */
+  public static void exportData(int[] sizeArray, long[] timeArray, String sortMethod){
+    try{
+      File file = new File("results.csv");
+      FileWriter resultsFile = new FileWriter(file);
+      resultsFile.write(sortMethod.replace(sortMethod.charAt(0), Character.toUpperCase(sortMethod.charAt(0))) + " Sort\n");
+      for(int i = 0; i < sizeArray.length; i++){
+        resultsFile.write(sizeArray[i] + ", " + timeArray[i] + "\n");
+      }
+      resultsFile.close();
+    }
+    catch (IOException e) { // Catch exception
+      System.out.println("An error occurred while exporting the marks.");
+      e.printStackTrace();
+    }
+    System.out.println("Data was generated in the file results.csv");
+  }
+}
